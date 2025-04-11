@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  provider          String
+  providerAccountId String
+  refreshToken      String?
+  accessToken       String?
+  expiresAt         Int?
+  tokenType         String?
+  scope             String?
+  idToken           String?
+  sessionState      String?
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId], map: "Account_userId_fkey")
+}
+
+model AppAccessLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  timestamp DateTime
+  provider  String
+  eventType String
+  email     String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  firstName     String?        @db.VarChar(255)
+  lastName      String?        @db.VarChar(255)
+  username      String?        @unique @db.VarChar(255)
+  password      String?        @db.VarChar(255)
+  email         String?        @unique @db.VarChar(255)
+  phone         String?        @db.VarChar(255)
+  image         String?        @db.VarChar(255)
+  name          String?        @db.VarChar(255)
+  profileImage  String?        @db.VarChar(255)
+  role          User_role      @default(USER)
+  companyName   String?        @db.VarChar(255)
+  addressLine1  String?        @db.VarChar(255)
+  addressLine2  String?        @db.VarChar(255)
+  city          String?        @db.VarChar(255)
+  country       User_country?
+  state         User_state?
+  zipCode       String?        @db.VarChar(255)
+  emailVerified Boolean?       @default(false)
+  active        Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime
+  Account       Account[]
+  AppAccessLog  AppAccessLog[]
+  Session       Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum User_role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum User_country {
+  afghanistan
+  albania
+  algeria
+  andorra
+  angola
+  antigua_and_barbuda
+  argentina
+  armenia
+  australia
+  austria
+  azerbaijan
+  bahamas
+  bahrain
+  bangladesh
+  barbados
+  belarus
+  belgium
+  belize
+  benin
+  bhutan
+  bolivia
+  bosnia_and_herzegovina
+  botswana
+  brazil
+  brunei
+  bulgaria
+  burkina_faso
+  burundi
+  cabo_verde
+  cambodia
+  cameroon
+  canada
+  central_african_republic
+  chad
+  chile
+  china
+  colombia
+  comoros
+  republic_of_the_congo_democratic
+  republic_of_the_congo
+  costa_rica
+  croatia
+  cuba
+  cyprus
+  czech_republic
+  denmark
+  djibouti
+  dominica
+  dominican_republic
+  ecuador
+  egypt
+  el_salvador
+  equatorial_guinea
+  eritrea
+  estonia
+  eswatini
+  ethiopia
+  fiji
+  finland
+  france
+  gabon
+  gambia
+  georgia
+  germany
+  ghana
+  greece
+  grenada
+  guatemala
+  guinea
+  guinea_bissau
+  guyana
+  haiti
+  holy_see
+  honduras
+  hungary
+  iceland
+  india
+  indonesia
+  iran
+  iraq
+  ireland
+  israel
+  italy
+  jamaica
+  japan
+  jordan
+  kazakhstan
+  kenya
+  kiribati
+  north_korea
+  south_korea
+  kuwait
+  kyrgyzstan
+  laos
+  latvia
+  lebanon
+  lesotho
+  liberia
+  libya
+  liechtenstein
+  lithuania
+  luxembourg
+  madagascar
+  malawi
+  malaysia
+  maldives
+  mali
+  malta
+  marshall_islands
+  mauritania
+  mauritius
+  mexico
+  micronesia
+  moldova
+  monaco
+  mongolia
+  montenegro
+  morocco
+  mozambique
+  myanmar
+  namibia
+  nauru
+  nepal
+  netherlands
+  new_zealand
+  nicaragua
+  niger
+  nigeria
+  north_macedonia
+  norway
+  oman
+  pakistan
+  palau
+  palestine
+  panama
+  papua_new_guinea
+  paraguay
+  peru
+  philippines
+  poland
+  portugal
+  qatar
+  romania
+  russia
+  rwanda
+  saint_kitts_and_nevis
+  saint_lucia
+  saint_vincent_and_the_grenadines
+  samoa
+  san_marino
+  sao_tome_and_principe
+  saudi_arabia
+  senegal
+  serbia
+  seychelles
+  sierra_leone
+  singapore
+  slovakia
+  slovenia
+  solomon_islands
+  somalia
+  south_africa
+  south_sudan
+  spain
+  sri_lanka
+  sudan
+  suriname
+  sweden
+  switzerland
+  syria
+  tajikistan
+  tanzania
+  thailand
+  timor_leste
+  togo
+  tonga
+  trinidad_and_tobago
+  tunisia
+  turkey
+  turkmenistan
+  tuvalu
+  uganda
+  ukraine
+  united_arab_emirates
+  united_kingdom
+  united_states
+  uruguay
+  uzbekistan
+  vanuatu
+  venezuela
+  vietnam
+  yemen
+  zambia
+  zimbabwe
+}
+
+enum User_state {
+  alabama
+  alaska
+  arizona
+  arkansas
+  california
+  colorado
+  connecticut
+  delaware
+  florida
+  georgia
+  hawaii
+  idaho
+  illinois
+  indiana
+  iowa
+  kansas
+  kentucky
+  louisiana
+  maine
+  maryland
+  massachusetts
+  michigan
+  minnesota
+  mississippi
+  missouri
+  montana
+  nebraska
+  nevada
+  new_hampshire
+  new_jersey
+  new_mexico
+  new_york
+  north_carolina
+  north_dakota
+  ohio
+  oklahoma
+  oregon
+  pennsylvania
+  rhode_island
+  south_carolina
+  south_dakota
+  tennessee
+  texas
+  utah
+  vermont
+  virginia
+  washington
+  west_virginia
+  wisconsin
+  wyoming
+}
