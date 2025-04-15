@@ -1,6 +1,7 @@
+import React from "react";
 import PageLayout from "@/components/page-layout";
 import PageTitle from "@/components/tailgrids/page-title/page-title";
-import React from "react";
+import RegisterForm from "@/components/register/RegisterForm";
 
 const Page = () => {
   return (
@@ -11,6 +12,9 @@ const Page = () => {
           pageSubtitle="This is the Register Page"
         />
       </section>
+      <div className="flex justify-center items-center">
+        <RegisterForm />
+      </div>
     </PageLayout>
   );
 };

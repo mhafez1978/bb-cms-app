@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE `Task` MODIFY `status` ENUM('TODO', 'IN_PROGRESS', 'DONE', 'BLOCKED', 'CANCELED') NULL,
+    MODIFY `projectId` VARCHAR(191) NULL;
+
+-- AlterTable
+ALTER TABLE `User` ADD COLUMN `image` VARCHAR(255) NULL;

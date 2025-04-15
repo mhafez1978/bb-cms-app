@@ -22,7 +22,7 @@ const ToggleSwitch = () => {
       <button
         onClick={toggleTheme}
         aria-label="Toggle Dark Mode"
-        className="relative flex h-8 w-16 items-center rounded-full mr-4 bg-slate-500 dark:bg-slate-200 transition-colors"
+        className="relative flex h-8 w-16 items-center rounded-full mr-4 bg-gray-500 dark:bg-gray-600 transition-colors"
       >
         <span
           className={`absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-yellow-500 shadow transition-all duration-300 ease-in-out

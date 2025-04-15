@@ -18,6 +18,16 @@ const nextConfig: NextConfig = {
         hostname: "lh3.googleusercontent.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "img.freepik.com",
+        pathname: "**",
+      },
+      {
+        protocol: "https",
+        hostname: "platform-lookaside.fbsbx.com",
+        pathname: "**",
+      },
     ],
   },
 };

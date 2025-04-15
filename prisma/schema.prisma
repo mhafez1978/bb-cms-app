@@ -8,9 +8,21 @@ datasource db {
 }
 
 enum Role {
+  CONTRACTOR
+  PARTNER
+  VENDOR
+  CUSTOMER
+  EMPLOYEE
   USER
   ADMIN
   SUPER_ADMIN
+}
+
+enum CustomerStatus {
+  PROSPECT
+  NEW
+  EXISTING
+  VIP
 }
 
 enum ProjectState {
@@ -23,7 +35,7 @@ enum ProjectState {
 }
 
 enum TaskStatus {
-  TODO
+  TO_DO
   IN_PROGRESS
   DONE
   BLOCKED
@@ -290,45 +302,45 @@ enum User_state {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  active       Boolean       @default(false)
-  role         Role          @default(USER)
-  firstName    String?       @db.VarChar(255)
-  lastName     String?       @db.VarChar(255)
-  fullName     String?       @db.VarChar(255)
-  phone        String?       @db.VarChar(50)
-  username     String        @unique
-  email        String        @unique
-  password     String        @db.VarChar(255)
-  addressLine1 String?       @db.VarChar(255)
-  addressLine2 String?       @db.VarChar(255)
-  city         String?       @db.VarChar(255)
-  state        User_state?
-  zipcode      String?       @db.VarChar(255)
-  country      User_country?
-  notes        String?
-
-  companyId String?
-  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  employee Employee?
-
-  assignedTasks    Task[]      @relation("AssignedTasks")
-  createdTasks     Task[]      @relation("CreatedTasks")
-  createdOrders    Order[]     @relation("OrderCreator")
-  approvedOrders   Order[]     @relation("OrderApprover")
-  approvedInvoices Invoice[]   @relation("InvoiceApprover")
-  createdProjects  Project[]   @relation("CreatedProjects")
-  managedProjects  Project[]   @relation("ManagedProjects")
-  addedOrderItems  OrderItem[] @relation("OrderItemAdder")
-  createdReports   Report[]    @relation("ReportCreator")
-
-  Account      Account[]
-  AppAccessLog AppAccessLog[]
-  Session      Session[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String         @id @default(cuid())
+  active           Boolean        @default(false)
+  role             Role           @default(USER)
+  firstName        String?        @db.VarChar(255)
+  lastName         String?        @db.VarChar(255)
+  fullName         String?        @db.VarChar(255)
+  image            String?        @db.VarChar(255)
+  phone            String?        @db.VarChar(50)
+  username         String         @unique
+  email            String         @unique
+  password         String         @db.VarChar(255)
+  addressLine1     String?        @db.VarChar(255)
+  addressLine2     String?        @db.VarChar(255)
+  city             String?        @db.VarChar(255)
+  state            User_state?
+  zipcode          String?        @db.VarChar(255)
+  country          User_country?
+  notes            String?
+  createdCompanies Company[]      @relation("CreatedCompanies")
+  companyId        String?
+  company          Company?       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee         Employee?
+  customer         Customer?
+  createdProducts  Product[]      @relation("CreatedProducts")
+  assignedTasks    Task[]         @relation("AssignedTasks")
+  createdTasks     Task[]         @relation("CreatedTasks")
+  createdOrders    Order[]        @relation("OrderCreator")
+  approvedOrders   Order[]        @relation("OrderApprover")
+  approvedInvoices Invoice[]      @relation("InvoiceApprover")
+  createdProjects  Project[]      @relation("CreatedProjects")
+  managedProjects  Project[]      @relation("ManagedProjects")
+  addedOrderItems  OrderItem[]    @relation("OrderItemAdder")
+  createdReports   Report[]       @relation("ReportCreator")
+  account          Account[]
+  appAccessLog     AppAccessLog[]
+  session          Session[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  Profile          Profile?
 }
 
 model Account {
@@ -336,6 +348,7 @@ model Account {
   userId            String
   provider          String
   providerAccountId String
+  type              String?
   refreshToken      String?
   accessToken       String?
   expiresAt         Int?
@@ -347,6 +360,14 @@ model Account {
 
   @@unique([provider, providerAccountId])
   @@index([userId])
+}
+
+model Profile {
+  id        Int     @id @default(autoincrement())
+  userId    String  @unique
+  bio       String?
+  avatarUrl String?
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model AppAccessLog {
@@ -372,46 +393,44 @@ model Session {
 }
 
 model Company {
-  id           String  @id @default(cuid())
-  name         String
-  description  String?
-  phone        String?
-  website      String?
-  email        String?
-  poc          String?
-  addressLine1 String?
-  addressLine2 String?
-  city         String?
-  state        String?
-  zipcode      String?
-  country      String?
-  notes        String?
-
-  users     User[]
-  employees Employee[]
-  customers Customer[]
-  products  Product[]
-  projects  Project[]
-  orders    Order[]
-  invoices  Invoice[]  @relation("CompanyInvoices")
-  reports   Report[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String       @id @default(cuid())
+  name            String
+  description     String?
+  phone           String?
+  website         String?
+  email           String?
+  poc             String?
+  addressLine1    String?
+  addressLine2    String?
+  city            String?
+  state           User_state
+  zipcode         String?
+  country         User_country
+  notes           String?
+  createdByUserId String?
+  createdBy       User?        @relation("CreatedCompanies", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  users           User[]
+  employees       Employee[]
+  customers       Customer[]
+  products        Product[]
+  projects        Project[]
+  orders          Order[]
+  invoices        Invoice[]    @relation("CompanyInvoices")
+  reports         Report[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 }
 
 model Employee {
-  id    String  @id @default(cuid())
-  name  String
-  title String?
-
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-  notes  String?
-
+  id        String   @id @default(cuid())
+  name      String
+  title     String?
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  notes     String?
+  orders    Order[]
   companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -419,27 +438,27 @@ model Employee {
 }
 
 model Customer {
-  id           String  @id @default(cuid())
+  id           String          @id @default(cuid())
+  status       CustomerStatus? @default(PROSPECT)
   name         String
   email        String?
   phone        String?
   addressLine1 String?
   addressLine2 String?
   city         String?
-  state        String?
+  state        User_state
   zipcode      String?
-  country      String?
+  country      User_country
   notes        String?
-
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  projects Project[]
-  orders   Order[]
-  invoices Invoice[] @relation("CustomerInvoices")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId       String          @unique
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId    String
+  company      Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  projects     Project[]
+  orders       Order[]
+  invoices     Invoice[]       @relation("CustomerInvoices")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   @@index([companyId])
 }
@@ -449,155 +468,124 @@ model Project {
   name        String
   description String?
   state       ProjectState @default(PLANNING_PHASE)
-
-  startDate DateTime?
-  endDate   DateTime?
-  notes     String?
-
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  customerId String?
-  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-
+  startDate   DateTime?
+  endDate     DateTime?
+  notes       String?
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerId  String?
+  customer    Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   User?   @relation("CreatedProjects", fields: [createdById], references: [id], onDelete: SetNull)
-
-  managerId String?
-  manager   User?   @relation("ManagedProjects", fields: [managerId], references: [id], onDelete: SetNull)
-
-  orders   Order[]
-  tasks    Task[]
-  invoices Invoice[] @relation("ProjectInvoices")
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdBy   User?        @relation("CreatedProjects", fields: [createdById], references: [id], onDelete: SetNull)
+  managerId   String?
+  manager     User?        @relation("ManagedProjects", fields: [managerId], references: [id], onDelete: SetNull)
+  orders      Order[]
+  tasks       Task[]
+  invoices    Invoice[]    @relation("ProjectInvoices")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
 
   @@index([companyId])
 }
 
 model Task {
-  id          String     @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus @default(TODO)
-  notes       String?
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
+  id           String      @id @default(cuid())
+  title        String
+  description  String?
+  status       TaskStatus? @default(TO_DO)
+  notes        String?
+  projectId    String?
+  project      Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
   assignedToId String?
-  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
-
-  createdById String
-  createdBy   User   @relation("CreatedTasks", fields: [createdById], references: [id], onDelete: Cascade)
-
-  dueDate  DateTime?
-  priority Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  assignedTo   User?       @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdById  String
+  createdBy    User        @relation("CreatedTasks", fields: [createdById], references: [id], onDelete: Cascade)
+  dueDate      DateTime?
+  priority     Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Product {
-  id          String  @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   description String?
-  quantity    Int     @default(0)
-  price       Float   @default(0.0)
+  quantity    Int?        @default(0)
+  cost        Float?      @default(0.0)
+  price       Float?      @default(0.0)
   notes       String?
-
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  orderItems OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User       @relation("CreatedProducts", fields: [createdById], references: [id], onDelete: Cascade)
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([companyId])
 }
 
 model Order {
-  id String @id @default(cuid())
-
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-
-  createdById String?
-  createdBy   User?   @relation("OrderCreator", fields: [createdById], references: [id], onDelete: SetNull)
-
+  id           String      @id @default(cuid())
+  items        OrderItem[]
+  invoice      Invoice?
+  notes        String?
+  companyId    String
+  company      Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  customerId   String?
+  customer     Customer?   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  employeeId   String?
+  employee     Employee?   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  projectId    String?
+  project      Project?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdById  String?
+  createdBy    User?       @relation("OrderCreator", fields: [createdById], references: [id], onDelete: SetNull)
   approvedById String?
-  approvedBy   User?   @relation("OrderApprover", fields: [approvedById], references: [id], onDelete: SetNull)
-
-  approvedAt DateTime?
-
-  items   OrderItem[]
-  invoice Invoice?
-  notes   String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  approvedBy   User?       @relation("OrderApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  approvedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   @@index([companyId, customerId])
 }
 
 model OrderItem {
-  id String @id @default(cuid())
-
-  orderId String
-  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
+  id           String   @id @default(cuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   notes        String?
   quantity     Int
   priceAtOrder Float
   lineTotal    Float
-
-  addedById String?
-  addedBy   User?   @relation("OrderItemAdder", fields: [addedById], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  addedById    String?
+  addedBy      User?    @relation("OrderItemAdder", fields: [addedById], references: [id], onDelete: SetNull)
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Invoice {
-  id String @id @default(cuid())
-
-  orderId String @unique
-  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  customerId String?
-  customer   Customer? @relation("CustomerInvoices", fields: [customerId], references: [id], onDelete: SetNull, map: "invoice_customer_fkey")
-
-  projectId String?
-  project   Project? @relation("ProjectInvoices", fields: [projectId], references: [id], onDelete: SetNull, map: "invoice_project_fkey")
-
-  companyId String
-  company   Company @relation("CompanyInvoices", fields: [companyId], references: [id], onDelete: Cascade, map: "invoice_company_fkey")
-
-  amount  Float
-  dueDate DateTime
-  paid    Boolean  @default(false)
-  notes   String?
-
-  approvedById String?
-  approvedBy   User?   @relation("InvoiceApprover", fields: [approvedById], references: [id], onDelete: SetNull)
-
+  id            String    @id @default(cuid())
+  companyId     String
+  company       Company   @relation("CompanyInvoices", fields: [companyId], references: [id], onDelete: Cascade, map: "invoice_company_fkey")
+  projectId     String?
+  project       Project?  @relation("ProjectInvoices", fields: [projectId], references: [id], onDelete: SetNull, map: "invoice_project_fkey")
+  approvedById  String?
+  approvedBy    User?     @relation("InvoiceApprover", fields: [approvedById], references: [id], onDelete: SetNull)
   customerName  String?
   customerEmail String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  amount        Float
+  dueDate       DateTime
+  paid          Boolean   @default(false)
+  notes         String?
+  orderId       String    @unique
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  customerId    String?
+  customer      Customer? @relation("CustomerInvoices", fields: [customerId], references: [id], onDelete: SetNull, map: "invoice_customer_fkey")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model Report {
@@ -606,18 +594,14 @@ model Report {
   description String?    @db.VarChar(1000)
   reportType  ReportType @default(CUSTOM)
   data        Json
-
-  companyId String
-  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-
+  companyId   String
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdById String?
-  createdBy   User?   @relation("ReportCreator", fields: [createdById], references: [id], onDelete: SetNull)
-
-  archived  Boolean   @default(false)
-  deletedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdBy   User?      @relation("ReportCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  archived    Boolean    @default(false)
+  deletedAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@index([companyId])
 }

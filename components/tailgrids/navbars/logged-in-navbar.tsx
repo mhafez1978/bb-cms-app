@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "../avatar/avatar";
 import ToggleSwitch from "../toggle-switch/toggle-switch";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
-
-interface LoggedInNavbarProps {
-  userImage: string;
-  username: string;
-}
+import { useTheme } from "next-themes";
 
 interface PrivatePagesProps {
   id: number;
@@ -29,24 +26,45 @@ const privatePages: PrivatePagesProps[] = [
   { id: 8, pageTitle: "Reports", pageUrl: "/reports" },
 ];
 
-const LoggedInNavbar = ({ userImage, username }: LoggedInNavbarProps) => {
+const LoggedInNavbar = () => {
   const [open, setOpen] = useState(false);
   const path = usePathname();
   const { data: session } = useSession();
   const user = session?.user;
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const logoSrc =
+    resolvedTheme === "dark"
+      ? "/bb-logo.png"
+      : resolvedTheme === "light"
+      ? "/bb-logo.png"
+      : resolvedTheme === "system"
+      ? "/bb-logo.png"
+      : "/avatar.jpg";
 
   return (
     <header className="flex w-full items-center bg-slate-800">
       <div className="container mx-auto">
         <div className="relative -mx-4 flex items-center justify-between">
           <div className="w-60 max-w-full px-4">
-            <a href="/#" className="block w-full py-5">
-              <img
-                src="https://cdn.tailgrids.com/2.0/image/assets/images/logo/logo-white.svg"
-                alt="logo"
-                className="w-full"
-              />
-            </a>
+            <Link href="/#" className="block w-full py-5">
+              {!mounted ? (
+                <div className="w-[240px] h-[84px] bg-gray-300 dark:bg-slate-700 animate-pulse" />
+              ) : (
+                <Image
+                  width={240}
+                  height={84}
+                  src={logoSrc}
+                  alt="logo"
+                  className="w-full"
+                />
+              )}
+            </Link>
           </div>
           <div className="flex w-full items-center justify-between px-4">
             <div>
@@ -88,8 +106,8 @@ const LoggedInNavbar = ({ userImage, username }: LoggedInNavbarProps) => {
                 <ToggleSwitch />
               </span>
               <Avatar
-                username={user?.fullName ?? "Unknown"}
-                userImage={user?.image ?? "/avatar.jpg"}
+                username={user?.fullName || "John Doe"}
+                userImage={user?.image || "/avatar.jpg"}
               />
             </div>
           </div>

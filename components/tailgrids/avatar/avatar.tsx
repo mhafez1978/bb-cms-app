@@ -60,7 +60,7 @@ export default function Avatar({
                   width={42}
                   height={42}
                   src={userImage}
-                  alt="avatar"
+                  alt={username}
                   className="h-full w-full rounded-full object-cover object-center"
                 />
                 <span className="absolute -right-0.5 -top-0.5 block h-[14px] w-[14px] rounded-full border-[2.3px] border-white bg-[#219653] dark:border-dark"></span>

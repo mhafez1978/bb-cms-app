@@ -7,8 +7,8 @@ interface PageTitleProps {
 
 const PageTitle = ({ pageTitle, pageSubtitle }: PageTitleProps) => {
   return (
-    <section className="py-[70px] dark:bg-dark">
-      <div className="mx-auto px-4 sm:container">
+    <section className="dark:bg-dark">
+      <div className="px-4">
         <div className="border-l-[5px] border-primary pl-5">
           <h2 className="mb-2 text-2xl font-semibold text-emerald-500 dark:text-white">
             {pageTitle}

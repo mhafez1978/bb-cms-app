@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import ToggleSwitch from "../toggle-switch/toggle-switch";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 interface PublicPagesProps {
   id: number;
@@ -20,17 +21,35 @@ const publicPages: PublicPagesProps[] = [
 const LoggedOutNavbar = () => {
   const [open, setOpen] = useState(false);
   const path = usePathname();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const logoSrc =
+    resolvedTheme === "dark"
+      ? "/bb-logo.png"
+      : resolvedTheme === "light"
+      ? "/light-bb-logo.png"
+      : "/bb-logo.png"; // fallback
+
   return (
     <header className="flex w-full items-center bg-slate-300 dark:bg-slate-800">
       <div className="container mx-auto">
         <div className="relative -mx-4 flex items-center justify-between">
           <div className="w-60 max-w-full px-4">
             <Link href="/" className="block w-full py-5">
-              {theme === "dark" ? (
-                <img src="/bb-logo.png" alt="logo" className="w-full" />
+              {!mounted ? (
+                <div className="w-[240px] h-[84px] bg-gray-300 dark:bg-slate-700 animate-pulse" />
               ) : (
-                <img src="/light-bb-logo.png" alt="logo" className="w-full" />
+                <Image
+                  width={240}
+                  height={84}
+                  src={logoSrc}
+                  alt="logo"
+                  className="w-full"
+                />
               )}
             </Link>
           </div>

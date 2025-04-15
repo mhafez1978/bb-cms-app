@@ -13,12 +13,7 @@ export default function Navbar() {
 
   // If the user is authenticated
   if (status === "authenticated" && session?.user) {
-    return (
-      <LoggedInNavbar
-        username={session.user.name || "Guest User"}
-        userImage={session.user.image || "/avatar.jpg"}
-      />
-    );
+    return <LoggedInNavbar />;
   }
 
   return <LoggedOutNavbar />;

@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const LoggedOutFooter = () => {
@@ -41,12 +43,12 @@ const LoggedOutFooter = () => {
                   Need Help? Call Us Now
                 </h3>
                 <div>
-                  <a
+                  <Link
                     href="/#"
                     className="mb-6 block text-lg font-semibold text-dark dark:text-white"
                   >
                     +99 0214 2542 223
-                  </a>
+                  </Link>
                   <p className="mb-[10px] text-base text-body-color dark:text-dark-6">
                     Monday - Friday: 9:00-20:00
                   </p>
@@ -55,7 +57,7 @@ const LoggedOutFooter = () => {
                   </p>
                 </div>
                 <div className="flex items-center space-x-[18px] xl:justify-end">
-                  <a
+                  <Link
                     href="/#"
                     className="inline-block text-body-color hover:text-primary dark:text-dark-6"
                   >
@@ -72,8 +74,8 @@ const LoggedOutFooter = () => {
                         fill=""
                       />
                     </svg>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/#"
                     className="inline-block text-body-color hover:text-primary dark:text-dark-6"
                   >
@@ -90,8 +92,8 @@ const LoggedOutFooter = () => {
                         fill=""
                       />
                     </svg>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/#"
                     className="inline-block text-body-color hover:text-primary dark:text-dark-6"
                   >
@@ -115,8 +117,8 @@ const LoggedOutFooter = () => {
                         fill="currentColor"
                       />
                     </svg>
-                  </a>
-                  <a
+                  </Link>
+                  <Link
                     href="/#"
                     className="inline-block text-body-color hover:text-primary dark:text-dark-6"
                   >
@@ -132,7 +134,7 @@ const LoggedOutFooter = () => {
                         fill="currentColor"
                       />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -153,7 +155,9 @@ const LoggedOutFooter = () => {
                     We Accept:
                   </span>
                   <div>
-                    <img
+                    <Image
+                      width={400}
+                      height={40}
                       src="https://cdn.tailgrids.com/1.0/assets/images/ecommerce/footers/footer-01/payments.svg"
                       alt="payments"
                       className="max-w-full"
@@ -195,11 +199,8 @@ interface NavLinkProps {
 
 const NavLink = ({ text, link }: NavLinkProps) => {
   return (
-    <a
-      href={link}
-      className="block text-base text-body-color hover:text-primary dark:text-dark-6"
-    >
-      {text}
-    </a>
+    <li className="block text-base text-body-color hover:text-primary dark:text-dark-6">
+      <Link href={link}>{text}</Link>
+    </li>
   );
 };

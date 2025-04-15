@@ -1,49 +1,54 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import PageLayout from "@/components/page-layout";
 import PageTitle from "@/components/tailgrids/page-title/page-title";
-import React from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth"; // Adjust the path based on your project structure
-import { redirect } from "next/navigation";
-import ClockWithDate from "@/components/ClockWirhDate";
+import ClientDashboard from "@/components/dashboard/ClientDashboard";
+import PasswordReset from "@/components/admin/PasswordReset";
+import CreateModel from "@/components/admin/CreateModel";
+import CompanySetup from "@/components/company/CompanySetup";
 
 const Page = async () => {
   const session = await getServerSession(authOptions);
-  let user = null;
-  if (!session || !session.user) {
-    redirect("/api/auth/signin");
-  }
 
-  if (session && session.user) {
-    console.log(session.user);
-    user = session.user;
+  if (!session || !session.user?.id) {
+    console.warn("⛔ Redirecting: No session found");
+    redirect("/auth/login");
   }
-
+  if (session.user.role) {
+    console.log(session.user.role);
+  }
   return (
     <PageLayout>
-      <section>
-        <PageTitle
-          pageTitle="Dashboard Page"
-          pageSubtitle="This is a test Dashboard"
-        />
-      </section>
-      <section>
-        <div className="pl-4">
-          <p>Welcome back, {user?.firstName}</p>
-          <p>
-            You've been a member since:{" "}
-            {user?.createdAt
-              ? new Date(user.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
-              : "Unknown"}
-          </p>
-        </div>
-        <div>
-          <ClockWithDate />
-        </div>
-      </section>
+      <div className="min-h-[40px] w-full"></div>
+      <PageTitle
+        pageTitle="Dashboard Page"
+        pageSubtitle="This is a test Dashboard"
+      />
+      {session.user.role === "SUPER_ADMIN" && (
+        <>
+          <div className="min-h-[100px] w-full"></div>
+          <PasswordReset />
+          <div className="min-h-[100px] w-full"></div>
+          <ClientDashboard user={session.user} />
+          <CreateModel />
+        </>
+      )}
+      {session.user.role === "ADMIN" && (
+        <>
+          <div className="min-h-[72vh] py-10 px-10">
+            <h3>Welcome, to BB CMS</h3>
+            <CompanySetup />
+          </div>
+        </>
+      )}
+      {session.user.role === "USER" && (
+        <>
+          <div className="min-h-[72vh]">
+            <h1>You're a member of a copmany</h1>
+          </div>
+        </>
+      )}
     </PageLayout>
   );
 };

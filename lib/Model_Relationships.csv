@@ -1,0 +1,63 @@
+Model,Relationship
+User,has one Profile
+User,has many Account
+User,has many Session
+User,belongs to Company
+User,has one Employee
+User,created many Task (CreatedTasks)
+User,assigned many Task (AssignedTasks)
+User,created many Order (OrderCreator)
+User,approved many Order (OrderApprover)
+User,approved many Invoice (InvoiceApprover)
+User,created many Project (CreatedProjects)
+User,managed many Project (ManagedProjects)
+User,added many OrderItem (OrderItemAdder)
+User,created many Report (ReportCreator)
+User,has many AppAccessLog
+Account,belongs to User
+Session,belongs to User
+Profile,belongs to User
+AppAccessLog,belongs to User
+Company,has many User
+Company,has many Employee
+Company,has many Customer
+Company,has many Product
+Company,has many Project
+Company,has many Order
+Company,has many Invoice (CompanyInvoices)
+Company,has many Report
+Employee,belongs to Company
+Employee,belongs to User (optional)
+Customer,belongs to Company
+Customer,has many Project
+Customer,has many Order
+Customer,has many Invoice (CustomerInvoices)
+Project,belongs to Company
+Project,belongs to Customer (optional)
+Project,created by User (CreatedProjects)
+Project,managed by User (ManagedProjects)
+Project,has many Task
+Project,has many Order
+Project,has many Invoice (ProjectInvoices)
+Task,belongs to Project (optional)
+Task,created by User (CreatedTasks)
+Task,assigned to User (AssignedTasks)
+Product,belongs to Company
+Product,has many OrderItem
+Order,belongs to Company
+Order,belongs to Customer
+Order,belongs to Project (optional)
+Order,created by User (OrderCreator)
+Order,approved by User (OrderApprover)
+Order,has one Invoice
+Order,has many OrderItem
+OrderItem,belongs to Order
+OrderItem,belongs to Product
+OrderItem,added by User (OrderItemAdder)
+Invoice,belongs to Order
+Invoice,belongs to Customer (optional)
+Invoice,belongs to Project (optional)
+Invoice,belongs to Company (CompanyInvoices)
+Invoice,approved by User (InvoiceApprover)
+Report,belongs to Company
+Report,created by User (ReportCreator)
