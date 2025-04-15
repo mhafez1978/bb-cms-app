@@ -23,7 +23,11 @@ export default function CompanyForm() {
     } else {
       setActiveStep(false);
     }
-  }, [step2Done, step1Done, activeStep]);
+
+    if (step2Started) {
+      console.log(step2Started);
+    }
+  }, [step2Done, step1Done, activeStep, step2Started]);
 
   return (
     <div className="min-h-[72vh] py-10 px-10">
@@ -42,7 +46,7 @@ export default function CompanyForm() {
           <div className="flex flex-row gap-4 items-center">
             <p className="text-xl font-black">Step 2: </p>
             <p className={step2Done ? "line-through" : "text-base"}>
-              Then, we'll add your products.
+              Add your company products.
             </p>
           </div>
           {step2Done === true ? (
@@ -60,7 +64,7 @@ export default function CompanyForm() {
                   onClick={() => setStep2Done(true)}
                   className="mt-4 w-fit bg-black text-white"
                 >
-                  I'm done adding products
+                  I&apos;m done adding products
                 </Button>
               )}
             </>
@@ -74,12 +78,12 @@ export default function CompanyForm() {
                   setProductCount((prev) => prev + 1);
                 }}
               />
-              {productCount > 0 && !step2Done && (
+              {step2Started && productCount > 0 && !step2Done && (
                 <Button
                   onClick={() => setStep2Done(true)}
                   className="mt-4 w-fit bg-black text-white"
                 >
-                  I'm done adding products
+                  I&apos;m done adding products
                 </Button>
               )}
             </>

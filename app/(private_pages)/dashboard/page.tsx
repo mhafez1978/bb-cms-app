@@ -45,7 +45,7 @@ const Page = async () => {
       {session.user.role === "USER" && (
         <>
           <div className="min-h-[72vh]">
-            <h1>You're a member of a copmany</h1>
+            <h1>You&apos;re a member of a copmany</h1>
           </div>
         </>
       )}

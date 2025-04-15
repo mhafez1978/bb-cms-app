@@ -16,10 +16,10 @@ const CompanyInfoForm = ({
   hideForm,
   setHideForm,
 }: {
-  hideForm?: boolean;
-  setHideForm?: React.Dispatch<React.SetStateAction<boolean>>;
+  hideForm: boolean;
+  setHideForm: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
@@ -104,8 +104,6 @@ const CompanyInfoForm = ({
       console.error("You need to login.");
       return;
     }
-
-    const userId = session.user.id;
 
     const payload = {
       name,
@@ -302,7 +300,7 @@ const CompanyInfoForm = ({
                   setAddressLine2(e.target.value);
                   setShow9(true);
                 }}
-                // onBlur={() => setAddressLine2Touched(true)}
+                onBlur={() => setAddressLine2Touched(true)}
               />
               {addressLine2Error && (
                 <p className="w-1/3 text-sm font-semibold text-white bg-red-500 py-2 px-2 rounded">
@@ -415,7 +413,7 @@ const CompanyInfoForm = ({
                 </Button>
               ) : (
                 <Button
-                  onClick={(e) => setLoading(true)}
+                  onClick={() => setLoading(true)}
                   type="submit"
                   className="bg-black text-white py-2 px-8"
                 >

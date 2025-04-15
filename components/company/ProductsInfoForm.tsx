@@ -82,7 +82,7 @@ const ProductsInfoForm = ({
       setNotes("");
       if (onProductCreated) onProductCreated();
       setResultSuccess("");
-
+      setHideForm(false);
       return res;
     } catch (err) {
       console.error(err);
